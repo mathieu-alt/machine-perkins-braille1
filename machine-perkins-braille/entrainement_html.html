@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entraînement Machine Perkins</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .nav-bar {
+            background-color: #2c3e50;
+            padding: 10px 20px;
+            color: white;
+        }
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .nav-bar a:hover {
+            color: #3498db;
+        }
+        .simulator-container {
+            background-color: white;
+            padding: 20px;
+            height: calc(100vh - 50px);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin: 0 0 20px 0;
+            font-size: 1.5em;
+            grid-column: 1 / -1;
+        }
+        .braille-display {
+            background-color: #f0f0f0;
+            padding: 20px;
+            padding-bottom: 100px;
+            border-radius: 8px;
+            overflow-x: auto;
+            overflow-y: auto;
+            min-height: 0;
+            grid-row: 2;
+            grid-column: 1;
+            width: calc(30 * 5mm + 29 * 7.46mm + 40px);
+        }
+        .sidebar {
+            grid-row: 2;
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+            padding-left: 20px;
+        }
+        .current-cell-section {
+            flex-shrink: 0;
+        }
+        h2 {
+            font-size: 1.1em;
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .braille-line {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 7.46mm;
+            margin-bottom: 10mm;
+            align-items: center;
+            padding-bottom: 10mm;
+            border-bottom: 2px solid #d0d0d0;
+        }
+        .braille-line:last-child {
+            border-bottom: 2px solid #007bff;
+        }
+        .braille-cell {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 2.6mm;
+            width: 5mm;
+            height: 10mm;
+        }
+        .dot {
+            width: 2.4mm;
+            height: 2.4mm;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+        .dot.active {
+            background-color: #2c3e50;
+        }
+        .braille-table {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .braille-table h3, .braille-table h4 {
+            margin: 0 0 10px 0;
+            font-size: 1em;
+            color: #2c3e50;
+        }
+        .braille-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .braille-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .braille-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .braille-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .braille-mini-cell {
+            display: inline-grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 1.5mm;
+            width: 3mm;
+            height: 6mm;
+            vertical-align: middle;
+        }
+        .braille-mini-dot {
+            width: 1.2mm;
+            height: 1.2mm;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+        .braille-mini-dot.active {
+            background-color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">← Retour à l'accueil</a>
+    </div>
+    
+    <div class="simulator-container">
+        <h1>Entraînement Machine Perkins</h1>
+        
+        <div class="braille-display" id="brailleOutput"></div>
+        
+        <div class="sidebar">
+            <div class="current-cell-section">
+                <h2>Cellule actuelle</h2>
+                <div class="braille-cell" style="grid-template-columns: 1fr;">
+                    <div class="dot" id="dot1" style="grid-column: 1; grid-row: 1">1 (F)</div>
+                    <div class="dot" id="dot2" style="grid-column: 1; grid-row: 2">2 (D)</div>
+                    <div class="dot" id="dot3" style="grid-column: 1; grid-row: 3">3 (S)</div>
+                    <div class="dot" id="dot4" style="grid-column: 2; grid-row: 1">4 (J)</div>
+                    <div class="dot" id="dot5" style="grid-column: 2; grid-row: 2">5 (K)</div>
+                    <div class="dot" id="dot6" style="grid-column: 2; grid-row: 3">6 (L)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="braille-table">
+            <h3>Correspondance Touches Clavier ↔ Points Braille</h3>
+            <table style="margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th>Touche</th>
+                        <th>Point</th>
+                        <th>Position</th>
+                        <th>Touche</th>
+                        <th>Point</th>
+                        <th>Position</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: bold;">F</td>
+                        <td>Point 1</td>
+                        <td>Haut gauche</td>
+                        <td style="font-weight: bold;">J</td>
+                        <td>Point 4</td>
+                        <td>Haut droit</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">D</td>
+                        <td>Point 2</td>
+                        <td>Milieu gauche</td>
+                        <td style="font-weight: bold;">K</td>
+                        <td>Point 5</td>
+                        <td>Milieu droit</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: bold;">S</td>
+                        <td>Point 3</td>
+                        <td>Bas gauche</td>
+                        <td style="font-weight: bold;">L</td>
+                        <td>Point 6</td>
+                        <td>Bas droit</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>Alphabet Braille Complet (64 caractères)</h3>
+            
+            <h4 style="margin-top: 15px; margin-bottom: 5px; color: #2c3e50;">Lettres de base (a-z)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                    </tr>
+                </thead>
+                <tbody id="brailleTableBody"></tbody>
+            </table>
+            
+            <h4 style="margin-top: 15px; margin-bottom: 5px; color: #2c3e50;">Lettres accentuées</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Lettre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                    </tr>
+                </thead>
+                <tbody id="brailleAccentTableBody"></tbody>
+            </table>
+            
+            <h4 style="margin-top: 15px; margin-bottom: 5px; color: #2c3e50;">Chiffres (0-9)</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Chiffre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Chiffre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Chiffre</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                    </tr>
+                </thead>
+                <tbody id="brailleNumberTableBody"></tbody>
+            </table>
+            
+            <h4 style="margin-top: 15px; margin-bottom: 5px; color: #2c3e50;">Ponctuation et caractères spéciaux</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Caractère</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Caractère</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                        <th>Caractère</th>
+                        <th>Points</th>
+                        <th>Braille</th>
+                    </tr>
+                </thead>
+                <tbody id="braillePunctuationTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/braille.js"></script>
+</body>
+</html>
